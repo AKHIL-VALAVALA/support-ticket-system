@@ -111,6 +111,20 @@ docker compose up --build
 This starts MySQL (auto-seeded from `database/schema.sql` + `seed.sql`), the Django
 API on port 8000, and the React dev server on port 3000.
 
+## Deploying on Railway
+
+The root `railway.json` selects `backend/Dockerfile`, so Railway builds the Django
+API instead of trying to detect a start script at the monorepo root. Add a Railway
+MySQL service to the project; the backend recognizes Railway's `MYSQLHOST`,
+`MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, and `MYSQLPASSWORD` variables.
+
+Set `DJANGO_SECRET_KEY` to a unique secret, `DJANGO_ALLOWED_HOSTS` to the backend
+public domain, and `CORS_ALLOWED_ORIGINS` to the frontend public URL in the backend
+service's variables. The container runs migrations, collects static files, and
+serves Django with Gunicorn. For the React frontend, create a separate Railway
+service with its root directory set to `/frontend` and configure
+`REACT_APP_API_BASE_URL` to the backend public URL followed by `/api`.
+
 ## 4. Running Tests
 
 ```bash

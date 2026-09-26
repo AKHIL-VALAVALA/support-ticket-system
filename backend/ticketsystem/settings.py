@@ -12,7 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-dev-key-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    os.environ.get("RAILWAY_PUBLIC_DOMAIN", "localhost,127.0.0.1"),
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -32,6 +35,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -72,11 +76,11 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("DB_NAME", "support_ticket_db"),
-            "USER": os.environ.get("DB_USER", "root"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "localhost"),
-            "PORT": os.environ.get("DB_PORT", "3306"),
+            "NAME": os.environ.get("DB_NAME", os.environ.get("MYSQLDATABASE", "support_ticket_db")),
+            "USER": os.environ.get("DB_USER", os.environ.get("MYSQLUSER", "root")),
+            "PASSWORD": os.environ.get("DB_PASSWORD", os.environ.get("MYSQLPASSWORD", "")),
+            "HOST": os.environ.get("DB_HOST", os.environ.get("MYSQLHOST", "localhost")),
+            "PORT": os.environ.get("DB_PORT", os.environ.get("MYSQLPORT", "3306")),
             "OPTIONS": {
                 "charset": "utf8mb4",
             },
@@ -98,6 +102,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
