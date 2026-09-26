@@ -1,0 +1,39 @@
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
+
+
+class RegisterView(generics.CreateAPIView):
+    """POST /api/auth/register - public customer registration."""
+
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class LoginView(TokenObtainPairView):
+    """POST /api/auth/login - returns access/refresh tokens + user info."""
+
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class LogoutView(APIView):
+    """POST /api/auth/logout - blacklists the supplied refresh token."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except TokenError:
+            return Response({"detail": "Invalid or already-expired token."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Successfully logged out."}, status=status.HTTP_205_RESET_CONTENT)

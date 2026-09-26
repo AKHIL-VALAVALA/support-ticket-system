@@ -1,0 +1,28 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.env.*
+!.env.example
+LOCAL_CREDENTIALS.txt
+**/LOCAL_CREDENTIALS.txt
+*credentials*
+*secrets*
+*.pem
+*.key
+.venv/
+venv/
+staticfiles/
+.pytest_cache/
+*.log
+
+# Node / React
+node_modules/
+frontend/build/
+npm-debug.log*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
